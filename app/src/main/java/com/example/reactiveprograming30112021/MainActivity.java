@@ -24,121 +24,64 @@ import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableSource;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Supplier;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 public class MainActivity extends AppCompatActivity {
 
-
+    Observable<String> stringObservable;
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-//        try {
-////            Log.d("BBB","Kết quả 1 : " + );
-////            Log.d("BBB","Kết quả 2 : " + generateString1().get());
-//        } catch (ExecutionException e) {
-//            e.printStackTrace();
-//            Log.d("BBB","Lỗi " + e.getMessage());
-//        } catch (InterruptedException e) {
-//            Log.d("BBB","Lỗi " + e.getMessage());
-//            e.printStackTrace();
-//        }
-        try {
-            Log.d("BBB","Kết quả : " + generateString2().get());
-        } catch (ExecutionException e) {
-            Log.d("BBB",e.getMessage());
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            Log.d("BBB",e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    public void generateString() {
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
-
-//        Future<String> future = executorService.submit(new Callable<String>() {
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//        executorService.execute(new Runnable() {
 //            @Override
-//            public String call() throws Exception {
-//                Log.d("BBB",Thread.currentThread().getName());
-//                Thread.sleep(2000);
-//                return "abc";
+//            public void run() {
+//                try {
+//                    Thread.sleep(2000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//
 //            }
 //        });
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Log.d("BBB","1 " + Thread.currentThread().getName());
-            }
-        });
+        stringObservable = Observable.just("xin chào");
+        stringObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
 
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("BBB","2 " + Thread.currentThread().getName());
-            }
-        });
-//        return future;
+                    }
+
+                    @Override
+                    public void onNext(@NonNull String s) {
+                        Log.d("BBB",s);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+
     }
-    public void generateString1() {
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
 
-        Future<String> future1 = executorService.submit(new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                Log.d("BBB",Thread.currentThread().getName());
-                Thread.sleep(5000);
-                return "def";
-            }
-        });
-
-
-        Future<String> future2 = executorService.submit(new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                Log.d("BBB",Thread.currentThread().getName());
-//                Thread.sleep(2000);
-                return "abc";
-            }
-        });
-
-        try {
-            Log.d("BBB","Data 1 : + " + future1.get());
-            Log.d("BBB","Data 2 : + " + future2.get());
-
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-//        return future;
-    }
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public CompletableFuture<String> generateString2() {
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
-        CompletableFuture<String> completableFuture = new CompletableFuture<>();
-
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                Random random = new Random();
-                if (random.nextBoolean()){
-                    completableFuture.complete("Có data 1");
-                }else{
-                    completableFuture.completeExceptionally(new Throwable("Lỗi gì đó 1"));
-                }
-            }
-        });
-
-        return completableFuture;
-    }
 
 }
 
