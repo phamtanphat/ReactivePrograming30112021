@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 public class MainActivity extends AppCompatActivity {
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +43,15 @@ public class MainActivity extends AppCompatActivity {
 //            Log.d("BBB","Lỗi " + e.getMessage());
 //            e.printStackTrace();
 //        }
-        generateString();
+        try {
+            Log.d("BBB","Kết quả : " + generateString2().get());
+        } catch (ExecutionException e) {
+            Log.d("BBB",e.getMessage());
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            Log.d("BBB",e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void generateString() {
@@ -87,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         Future<String> future2 = executorService.submit(new Callable<String>() {
             @Override
             public String call() throws Exception {
@@ -109,7 +120,25 @@ public class MainActivity extends AppCompatActivity {
 
 //        return future;
     }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public CompletableFuture<String> generateString2() {
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                Random random = new Random();
+                if (random.nextBoolean()){
+                    completableFuture.complete("Có data 1");
+                }else{
+                    completableFuture.completeExceptionally(new Throwable("Lỗi gì đó 1"));
+                }
+            }
+        });
+
+        return completableFuture;
+    }
 
 }
 
