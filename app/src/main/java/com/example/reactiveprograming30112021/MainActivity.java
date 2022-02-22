@@ -16,6 +16,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -30,31 +31,43 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            try {
-                Log.d("BBB",generateString().get());
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            Log.d("BBB","Kết quả 1 : " + generateString().get());
+            Log.d("BBB","Kết quả 2 : " + generateString1().get());
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            Log.d("BBB","Lỗi " + e.getMessage());
+        } catch (InterruptedException e) {
+            Log.d("BBB","Lỗi " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public Future<String> generateString() {
-        Executor executor = Executors.newFixedThreadPool(1);
-        CompletableFuture<String> completableFuture = new CompletableFuture<>();
-        FutureTask<Void> future = new FutureTask<Void>(new Callable<Void>() {
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+
+        Future<String> future = executorService.submit(new Callable<String>() {
             @Override
-            public Void call() throws Exception {
+            public String call() throws Exception {
+                Log.d("BBB",Thread.currentThread().getName());
                 Thread.sleep(2000);
-                completableFuture.complete("abc");
-                return null;
+                return "abc";
             }
         });
-        executor.execute(future);
-        return completableFuture;
+        return future;
+    }
+    public Future<String> generateString1() {
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+
+        Future<String> future = executorService.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                Log.d("BBB",Thread.currentThread().getName());
+                Thread.sleep(2000);
+                return "def";
+            }
+        });
+        return future;
     }
 
 
