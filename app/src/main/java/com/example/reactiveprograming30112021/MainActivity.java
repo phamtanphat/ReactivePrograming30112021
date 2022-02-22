@@ -31,43 +31,83 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try {
-            Log.d("BBB","Kết quả 1 : " + generateString().get());
-            Log.d("BBB","Kết quả 2 : " + generateString1().get());
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            Log.d("BBB","Lỗi " + e.getMessage());
-        } catch (InterruptedException e) {
-            Log.d("BBB","Lỗi " + e.getMessage());
-            e.printStackTrace();
-        }
+//        try {
+////            Log.d("BBB","Kết quả 1 : " + );
+////            Log.d("BBB","Kết quả 2 : " + generateString1().get());
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//            Log.d("BBB","Lỗi " + e.getMessage());
+//        } catch (InterruptedException e) {
+//            Log.d("BBB","Lỗi " + e.getMessage());
+//            e.printStackTrace();
+//        }
+        generateString();
     }
 
-    public Future<String> generateString() {
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+    public void generateString() {
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
 
-        Future<String> future = executorService.submit(new Callable<String>() {
+//        Future<String> future = executorService.submit(new Callable<String>() {
+//            @Override
+//            public String call() throws Exception {
+//                Log.d("BBB",Thread.currentThread().getName());
+//                Thread.sleep(2000);
+//                return "abc";
+//            }
+//        });
+        executorService.execute(new Runnable() {
             @Override
-            public String call() throws Exception {
-                Log.d("BBB",Thread.currentThread().getName());
-                Thread.sleep(2000);
-                return "abc";
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Log.d("BBB","1 " + Thread.currentThread().getName());
             }
         });
-        return future;
-    }
-    public Future<String> generateString1() {
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
 
-        Future<String> future = executorService.submit(new Callable<String>() {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("BBB","2 " + Thread.currentThread().getName());
+            }
+        });
+//        return future;
+    }
+    public void generateString1() {
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+        Future<String> future1 = executorService.submit(new Callable<String>() {
             @Override
             public String call() throws Exception {
                 Log.d("BBB",Thread.currentThread().getName());
-                Thread.sleep(2000);
+                Thread.sleep(5000);
                 return "def";
             }
         });
-        return future;
+
+        Future<String> future2 = executorService.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                Log.d("BBB",Thread.currentThread().getName());
+//                Thread.sleep(2000);
+                return "abc";
+            }
+        });
+
+        try {
+            Log.d("BBB","Data 1 : + " + future1.get());
+            Log.d("BBB","Data 2 : + " + future2.get());
+
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+//        return future;
     }
 
 
