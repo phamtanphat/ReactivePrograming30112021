@@ -30,6 +30,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -53,9 +54,17 @@ public class MainActivity extends AppCompatActivity {
 //
 //            }
 //        });
-        stringObservable = Observable.just("xin chào");
+
+        stringObservable = Observable.just("Quận 1","Quận 2","Quận 3","Quận 4");
         stringObservable
                 .subscribeOn(Schedulers.io())
+                .map(new Function<String, String>() {
+                    @Override
+                    public String apply(String s) throws Throwable {
+                        Log.d("BBB",Thread.currentThread().getName());
+                        return "Edited " + s;
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<String>() {
                     @Override
